@@ -1,0 +1,9 @@
+---
+vrfs:
+  - name: "PARAMIKO"
+    description: "paramiko test"
+    rd: "7:7"
+    route_import:
+      - "7:1"  # optional comment here
+    route_export:
+      - "7:2" # optional comment her
