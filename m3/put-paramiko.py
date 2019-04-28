@@ -44,7 +44,7 @@ def main():
         j2_env = Environment(
             loader=FileSystemLoader("."), trim_blocks=True, autoescape=True
         )
-        template = j2_env.get_template(f"templates/{host['platform']}_vpn.j2")
+        template = j2_env.get_template(f"templates/paramiko/{host['platform']}_vpn.j2")
         new_vrf_config = template.render(data=vrfs)
 
         conn_params = paramiko.SSHClient()

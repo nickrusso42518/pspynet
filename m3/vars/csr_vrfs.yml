@@ -1,9 +1,10 @@
 ---
 vrfs:
-  - name: "PARAMIKO"
-    description: "paramiko test"
-    rd: "7:7"
+  - name: "TEST"
+    description: "python automation testing"
+    rd: "7:100"
     route_import:
       - "7:1"  # optional comment here
+      - "7:2"  # optional comment here
     route_export:
-      - "7:2" # optional comment her
+      - "7:3"  # optional comment here
