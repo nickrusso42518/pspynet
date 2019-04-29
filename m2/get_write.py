@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+"""
+Author: Nick Russo
+Purpose: Demonstrate using SSH via paramiko to get information from
+the network and write it to a file for future reference.
+"""
+
 import time
 import paramiko
 
@@ -22,6 +28,10 @@ def get_output(conn):
 
 
 def main():
+    """
+    Execution starts here.
+    """
+
     host_dict = {
         "csr": "show running-config | section vrf_definition",
         "xrv": "show running-config vrf",
@@ -43,10 +53,19 @@ def main():
 
         print(f"Logged into {get_output(conn).strip()} successfully")
 
-        commands = ["terminal length 0", "show version | include Software,", vrf_cmd]
+        commands = [
+            "terminal length 0",
+            "show version | include Software,",
+            vrf_cmd,
+        ]
+
+        concat_output = ""
         for command in commands:
             send_cmd(conn, command)
-            print(get_output(conn))
+            concat_output += get_output(conn)
+
+        with open(f"{hostname}.txt", "w") as handle:
+            handle.write(concat_output)
 
 
 if __name__ == "__main__":

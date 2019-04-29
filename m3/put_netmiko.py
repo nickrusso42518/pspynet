@@ -1,11 +1,19 @@
 #!/usr/bin/env python
 
+"""
+Author: Nick Russo
+Purpose: Demonstrate using SSH via netmiko to configure network devices.
+"""
+
 import yaml
 from netmiko import Netmiko
 from jinja2 import Environment, FileSystemLoader
 
 
 def main():
+    """
+    Execution starts here.
+    """
 
     host_list = [
         {
@@ -13,7 +21,11 @@ def main():
             "vrf_cmd": "show running-config | section vrf_def",
             "platform": "cisco_ios",
         },
-        {"name": "xrv", "vrf_cmd": "show running-config vrf", "platform": "cisco_xr"},
+        {
+            "name": "xrv",
+            "vrf_cmd": "show running-config vrf",
+            "platform": "cisco_xr",
+        },
     ]
 
     for host in host_list:
@@ -26,7 +38,9 @@ def main():
         j2_env = Environment(
             loader=FileSystemLoader("."), trim_blocks=True, autoescape=True
         )
-        template = j2_env.get_template(f"templates/netmiko/{host['platform']}_vpn.j2")
+        template = j2_env.get_template(
+            f"templates/netmiko/{host['platform']}_vpn.j2"
+        )
         new_vrf_config = template.render(data=vrfs)
 
         net_connect = Netmiko(
