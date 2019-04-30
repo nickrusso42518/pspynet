@@ -75,3 +75,52 @@ def parse_rt_iosxr(text):
         return_dict.update(vrf_dict)
 
     return return_dict
+
+
+def rt_diff(int_vrf_list, run_vrf_dict):
+    """
+    Uses set theory to determine the import/export route-targets that
+    should be added or deleted. Only differences are captured, which helps
+    Ansible achieve idempotence when making configuration updates.
+    """
+    return_list = []
+    for int_vrf in int_vrf_list:
+        # Copy benign parameters from intended config
+        vrf_dict = {
+            "name": int_vrf["name"],
+            "rd": int_vrf["rd"],
+            "description": int_vrf["description"],
+        }
+
+        # If the intended VRF exists in the running config
+        run_vrf = run_vrf_dict.get(str(int_vrf["name"]))
+        if run_vrf:
+            int_rti = set(int_vrf["route_import"])
+            int_rte = set(int_vrf["route_export"])
+            run_rti = set(run_vrf["route_import"])
+            run_rte = set(run_vrf["route_export"])
+            vrf_dict.update({"add_rti": list(int_rti - run_rti)})
+            vrf_dict.update({"del_rti": list(run_rti - int_rti)})
+            vrf_dict.update({"add_rte": list(int_rte - run_rte)})
+            vrf_dict.update({"del_rte": list(run_rte - int_rte)})
+
+        # intended VRF doesn't exist, so add all the RTs
+        else:
+            vrf_dict.update({"add_rti": int_vrf["route_import"]})
+            vrf_dict.update({"del_rti": []})
+            vrf_dict.update({"add_rte": int_vrf["route_export"]})
+            vrf_dict.update({"del_rte": []})
+
+        # Add the newly created dictionary to the list of dicts
+        return_list.append(vrf_dict)
+
+    return return_list
+
+
+def get_rt_parser(platform):
+    """
+    Selects the proper parsing function based on the specific platform.
+    Note it does not call the function, just returns it for calling later.
+    """
+    dispatch_dict = {"ios": parse_rt_ios, "iosxr": parse_rt_iosxr}
+    return dispatch_dict.get(platform.lower())

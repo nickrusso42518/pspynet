@@ -1,6 +1,7 @@
+# 'make' by itself runs the 'all' target
 .DEFAULT_GOAL := all
 .PHONY: all
-all:	fmt lint
+all:	fmt lint test
 
 .PHONY: fmt
 fmt:
@@ -13,3 +14,10 @@ lint:
 	@echo "Starting  lint"
 	find . -name "*.py" | xargs pylint
 	@echo "Completed lint"
+
+.PHONE: test
+test:
+	@echo "Starting  unit tests"
+	find . -name "*.pyc" -delete
+	find . -name "test_*.py" | xargs pytest
+	@echo "Completed unit tests"
