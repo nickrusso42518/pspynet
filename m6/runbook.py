@@ -60,6 +60,7 @@ def manage_rt(task):
     else:
         print("no diff; config up to date")
 
+
 def main():
     """
     Execution begins here.
