@@ -32,8 +32,20 @@ def main():
     """
 
     host_list = [
-        # {"name": "csr", "platform": "ios"},
-        {"name": "xrv", "platform": "iosxr"}
+        {
+            "name": "csr",
+            "platform": "ios",
+            "filter": "<native><vrf></vrf></native>",
+            "edit_target": "running",
+            "operation": None,
+        },
+        {
+            "name": "xrv",
+            "platform": "iosxr",
+            "filter": '<vrfs xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-infra-rsi-cfg"></vrfs>',
+            "edit_target": "candidate",
+            "operation": "replace",
+        },
     ]
 
     # Iterate over the list of hosts (dicts) defined above
@@ -50,26 +62,33 @@ def main():
         template = j2_env.get_template(f"templates/{host['platform']}_vpn.j2")
         vrf_config = template.render(data=vrfs["vrfs"])
 
-        # Open a new NETCONF connection to each host
-        with manager.connect(
-            host=host["name"],
-            username="pyuser",
-            password="pypass",
-            hostkey_verify=False,
-        ) as conn:
+        # Open a new NETCONF connection to each host using kwargs technique
+        connect_params = {
+            "host": host["name"],
+            "username": "pyuser",
+            "password": "pypass",
+            "hostkey_verify": False,
+            "allow_agent": False,
+            "look_for_keys": False,
+        }
+        with manager.connect(**connect_params) as conn:
 
             # Gather the current configuration and pretty-print it
             get_vrfs_resp = conn.get_config(
-                source="running",
-                filter=("subtree", "<native><vrf></vrf></native>"),
+                source="running", filter=("subtree", host["filter"])
             )
             print(tostring(get_vrfs_resp.data_ele, pretty_print=True).decode())
 
-            raise ValueError()
             # Apply the new config by replacing the VRF section. This will automatically
             # delete unspecified VRFs and subcomponents like VRFs, etc.
-            config_resp = conn.edit_config(target="running", config=vrf_config)
+            config_resp = conn.edit_config(
+                target=host["edit_target"],
+                config=vrf_config,
+                default_operation=host["operation"],
+            )
             if config_resp.ok:
+                if host["platform"] == "iosxr":
+                    conn.commit()
                 print("VRFs successfully updated")
             else:
                 print(f"Errors during update: {','.join(config_resp.errors)}")

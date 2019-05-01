@@ -141,7 +141,9 @@ disable=print-statement,
         comprehension-escape,
         similarities,
         comparison-with-callable,
-        invalid-name
+        invalid-name,
+        no-name-in-module,
+        no-member
 
 # ^ Last 3 lines needed for this particular library
 
