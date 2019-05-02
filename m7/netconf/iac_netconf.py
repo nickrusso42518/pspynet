@@ -23,6 +23,7 @@ def save_config_ios(conn):
     if save_resp.ok:
         print("Config successfully saved")
     else:
+        # Print list of errors as a comma-separated list
         print(f"Errors during save: {','.join(save_resp.errors)}")
 
 
@@ -31,27 +32,14 @@ def main():
     Execution starts here.
     """
 
-    host_list = [
-        {
-            "name": "csr",
-            "platform": "ios",
-            "filter": "<native><vrf></vrf></native>",
-            "edit_target": "running",
-            "operation": None,
-        },
-        {
-            "name": "xrv",
-            "platform": "iosxr",
-            "filter": '<vrfs xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-infra-rsi-cfg"></vrfs>',
-            "edit_target": "candidate",
-            "operation": "replace",
-        },
-    ]
+    # Read the hosts file into structured data, may raise YAMLError
+    with open("hosts.yml", "r") as handle:
+        host_root = safe_load(handle)
 
     # Iterate over the list of hosts (dicts) defined above
-    for host in host_list:
+    for host in host_root["host_list"]:
 
-        # Read the YAML file into structured data, may raise YAMLError
+        # Read the variables file into structured data, may raise YAMLError
         with open(f"vars/{host['name']}_vrfs.yml", "r") as handle:
             vrfs = safe_load(handle)
 
@@ -71,6 +59,8 @@ def main():
             "allow_agent": False,
             "look_for_keys": False,
         }
+
+        # Use the dict above as "keyword arguments" to open netconf session
         with manager.connect(**connect_params) as conn:
 
             # Gather the current configuration and pretty-print it
@@ -79,22 +69,26 @@ def main():
             )
             print(tostring(get_vrfs_resp.data_ele, pretty_print=True).decode())
 
-            # Apply the new config by replacing the VRF section. This will automatically
-            # delete unspecified VRFs and subcomponents like VRFs, etc.
+            # Apply the new config by replacing the VRF section.
+            # This will delete unspecified VRFs and subcomponents like RTs, etc
             config_resp = conn.edit_config(
                 target=host["edit_target"],
                 config=vrf_config,
                 default_operation=host["operation"],
             )
+
             if config_resp.ok:
+                # Save actions differ between platforms
+                # IOS-XR updates the candidate config then commits it
+                # IOS/IOS-XE updates the running config then copies to startup
                 if host["platform"] == "iosxr":
                     conn.commit()
+                elif host["platform"] == "ios":
+                    save_config_ios(conn)
                 print("VRFs successfully updated")
             else:
+                # Print list of errors as a comma-separated list
                 print(f"Errors during update: {','.join(config_resp.errors)}")
-
-            if host["platform"] == "ios":
-                save_config_ios(conn)
 
 
 if __name__ == "__main__":
