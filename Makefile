@@ -13,6 +13,7 @@ fmt:
 lint:
 	@echo "Starting  lint"
 	find . -name "*.py" | xargs pylint
+	find . -name "*.yml" | xargs yamllint -s
 	@echo "Completed lint"
 
 .PHONE: test

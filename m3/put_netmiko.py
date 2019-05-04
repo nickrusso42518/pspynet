@@ -5,7 +5,7 @@ Author: Nick Russo
 Purpose: Demonstrate using SSH via netmiko to configure network devices.
 """
 
-import yaml
+from yaml import safe_load
 from netmiko import Netmiko
 from jinja2 import Environment, FileSystemLoader
 
@@ -15,52 +15,49 @@ def main():
     Execution starts here.
     """
 
-    host_list = [
-        {
-            "name": "csr",
-            "vrf_cmd": "show running-config | section vrf_def",
-            "platform": "cisco_ios",
-        },
-        {
-            "name": "xrv",
-            "vrf_cmd": "show running-config vrf",
-            "platform": "cisco_xr",
-        },
-    ]
+    # Read the hosts file into structured data, may raise YAMLError
+    with open("hosts.yml", "r") as handle:
+        host_root = safe_load(handle)
 
-    for host in host_list:
+    # Netmiko uses "cisco_ios" instead of "ios" and
+    # "cisco_xr" instead of "iosxr", so use a mapping dict to convert
+    platform_map = {"ios": "cisco_ios", "iosxr": "cisco_xr"}
+
+    # Iterate over the list of hosts (list of dictionaries)
+    for host in host_root["host_list"]:
+
+        # Use the map to get the proper Netmiko platform
+        platform = platform_map[host["platform"]]
+
+        # Load the host-specific VRF declarative state
         with open(f"vars/{host['name']}_vrfs.yml", "r") as handle:
-            try:
-                vrfs = yaml.safe_load(handle)
-            except yaml.YAMLError as exc:
-                print(exc)
+            vrfs = safe_load(handle)
 
+        # Setup the jinja2 templating environment and render the template
         j2_env = Environment(
             loader=FileSystemLoader("."), trim_blocks=True, autoescape=True
         )
-        template = j2_env.get_template(
-            f"templates/netmiko/{host['platform']}_vpn.j2"
-        )
+        template = j2_env.get_template(f"templates/netmiko/{platform}_vpn.j2")
         new_vrf_config = template.render(data=vrfs)
 
+        # Create netmiko SSH connection handler to access the device
         net_connect = Netmiko(
             host=host["name"],
             username="pyuser",
             password="pypass",
-            device_type=host["platform"],
+            device_type=platform,
         )
 
         print(f"Logged into {net_connect.find_prompt()} successfully")
 
-        print(new_vrf_config.split("\n"))
+        # Send the configuration string to the device. Netmiko
+        # takes a list of strings, not a giant \n-delimited string,
+        # so use the .split() function
         result = net_connect.send_config_set(new_vrf_config.split("\n"))
-        print(result)
 
-        # term len 0 is automatic
-        commands = ["show version | include Software,", host["vrf_cmd"]]
-        for command in commands:
-            output = net_connect.send_command(command)
-            print(output)
+        # Netmiko automatically collects the results; you can ignore them
+        # or process them further
+        print(result)
 
         net_connect.disconnect()
 

@@ -6,7 +6,7 @@ Purpose: Demonstrate using SSH via paramiko to configure network devices.
 """
 
 import time
-import yaml
+from yaml import safe_load
 import paramiko
 from jinja2 import Environment, FileSystemLoader
 
@@ -14,10 +14,11 @@ from jinja2 import Environment, FileSystemLoader
 def send_cmd(conn, command):
     """
     Given an open connection and a command, issue the command and wait
-    500 ms for the command to be processed.
+    1 second for the command to be processed. Sometimes this has to be
+    increased, can be very tricky!
     """
     output = conn.send(command + "\n")
-    time.sleep(0.5)
+    time.sleep(1.0)
     return output
 
 
@@ -34,26 +35,18 @@ def main():
     Execution starts here.
     """
 
-    host_list = [
-        {
-            "name": "csr",
-            "vrf_cmd": "show running-config | section vrf_def",
-            "platform": "ios",
-        },
-        {
-            "name": "xrv",
-            "vrf_cmd": "show running-config vrf",
-            "platform": "iosxr",
-        },
-    ]
+    # Read the hosts file into structured data, may raise YAMLError
+    with open("hosts.yml", "r") as handle:
+        host_root = safe_load(handle)
 
-    for host in host_list:
+    # Iterate over the list of hosts (list of dictionaries)
+    for host in host_root["host_list"]:
+
+        # Load the host-specific VRF declarative state
         with open(f"vars/{host['name']}_vrfs.yml", "r") as handle:
-            try:
-                vrfs = yaml.safe_load(handle)
-            except yaml.YAMLError as exc:
-                print(exc)
+            vrfs = safe_load(handle)
 
+        # Setup the jinja2 templating environment and render the template
         j2_env = Environment(
             loader=FileSystemLoader("."), trim_blocks=True, autoescape=True
         )
@@ -62,6 +55,7 @@ def main():
         )
         new_vrf_config = template.render(data=vrfs)
 
+        # Create paramiko SSH client to connect to the device
         conn_params = paramiko.SSHClient()
         conn_params.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         conn_params.connect(
@@ -73,21 +67,15 @@ def main():
             allow_agent=False,
         )
 
+        # Start an interactive shell and collect the prompt
         conn = conn_params.invoke_shell()
-        time.sleep(0.5)  # need for XRv, prompt is slow
-
+        time.sleep(0.5)
         print(f"Logged into {get_output(conn).strip()} successfully")
 
+        # Send the configuration string to the device
+        print(new_vrf_config)
         send_cmd(conn, new_vrf_config)
-
-        commands = [
-            "terminal length 0",
-            "show version | include Software,",
-            host["vrf_cmd"],
-        ]
-        for command in commands:
-            send_cmd(conn, command)
-            print(get_output(conn))
+        print(f"Updated {host['name']} VRF configuration")
 
 
 if __name__ == "__main__":

@@ -9,3 +9,4 @@ vrf definition {{ vrf.name }}
  route-target import {{ rt }}
 {%  endfor %}
 {% endfor %}
+do write memory

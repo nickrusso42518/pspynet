@@ -32,12 +32,18 @@ def main():
     Execution starts here.
     """
 
+    # Define host inventory in line
     host_dict = {
         "csr": "show running-config | section vrf_definition",
         "xrv": "show running-config vrf",
     }
+
+    # For each host in the inventory dict, extract key and value
     for hostname, vrf_cmd in host_dict.items():
+        # Paramiko can be SSH client or server; use client here
         conn_params = paramiko.SSHClient()
+
+        # We don't need paramiko to refuse connections due to missing SSH keys
         conn_params.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         conn_params.connect(
             hostname=hostname,
@@ -48,23 +54,27 @@ def main():
             allow_agent=False,
         )
 
+        # Get an interactive shell and wait a bit for the prompt to appear
         conn = conn_params.invoke_shell()
-        time.sleep(0.5)  # need for XRv, prompt is slow
-
+        time.sleep(0.5)
         print(f"Logged into {get_output(conn).strip()} successfully")
 
+        # Iterate over the list of commands, sending each one in series
+        # The final command in the list is the OS-specific VRF "show" command
         commands = [
             "terminal length 0",
             "show version | include Software,",
             vrf_cmd,
         ]
-
         concat_output = ""
         for command in commands:
+            # Send command, get output, and append to output string
             send_cmd(conn, command)
             concat_output += get_output(conn)
 
-        with open(f"{hostname}.txt", "w") as handle:
+        # Open a new text file per host and write the output
+        print(f"Writing {hostname} facts to file")
+        with open(f"{hostname}_facts.txt", "w") as handle:
             handle.write(concat_output)
 
 

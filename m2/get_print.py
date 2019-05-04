@@ -32,12 +32,18 @@ def main():
     Execution starts here.
     """
 
+    # Define host inventory in line
     host_dict = {
         "csr": "show running-config | section vrf_definition",
         "xrv": "show running-config vrf",
     }
+
+    # For each host in the inventory dict, extract key and value
     for hostname, vrf_cmd in host_dict.items():
+        # Paramiko can be SSH client or server; use client here
         conn_params = paramiko.SSHClient()
+
+        # We don't need paramiko to refuse connections due to missing SSH keys
         conn_params.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         conn_params.connect(
             hostname=hostname,
@@ -51,7 +57,6 @@ def main():
         # Get an interactive shell and wait a bit for the prompt to appear
         conn = conn_params.invoke_shell()
         time.sleep(0.5)
-
         print(f"Logged into {get_output(conn).strip()} successfully")
 
         # Iterate over the list of commands, sending each one in series
@@ -62,6 +67,8 @@ def main():
             vrf_cmd,
         ]
         for command in commands:
+            # It helps to have a custom function to abstract sending
+            # commands and reading output from the device
             send_cmd(conn, command)
             print(get_output(conn))
 
