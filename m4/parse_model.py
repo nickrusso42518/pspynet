@@ -21,6 +21,7 @@ def parse_model_ios(text):
     if model_match:
         return model_match.group("model")
 
+    # No match was found
     return None
 
 
@@ -36,4 +37,5 @@ def parse_model_iosxr(text):
     if model_match:
         return model_match.group("model")
 
+    # No match was found
     return None

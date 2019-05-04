@@ -16,21 +16,12 @@ def main():
     Execution starts here.
     """
 
-    host_list = [
-        {
-            "name": "csr",
-            "vrf_cmd": "show running-config | section vrf_def",
-            "platform": "ios",
-        },
-        {
-            "name": "xrv",
-            "vrf_cmd": "show running-config vrf",
-            "platform": "iosxr",
-        },
-    ]
+    # Read the hosts file into structured data, may raise YAMLError
+    with open("hosts.yml", "r") as handle:
+        host_root = safe_load(handle)
 
-    # Iterate over the list of hosts (dicts) defined above
-    for host in host_list:
+    # Iterate over the list of hosts from YAML file
+    for host in host_root["host_list"]:
 
         # Determine and create the network driver object based on platform
         print(f"Getting {host['platform']} driver")

@@ -37,6 +37,7 @@ def parse_rt_ios(text):
         # Append dictionary to return list
         return_dict.update(vrf_dict)
 
+    # Return the VRF-name indexable dict for reference later
     return return_dict
 
 
@@ -55,23 +56,33 @@ def parse_rt_iosxr(text):
         sub_dict = {}
         vrf_dict = {name_match.group("name"): sub_dict}
 
-        rti_regex = re.compile(r"import\s+route-target(.+?)!", re.DOTALL)
-        rti_matches = rti_regex.findall(vrf, re.DOTALL)
-        if rti_matches:
-            rti_list = [s.strip() for s in rti_matches[0].strip().split("\n")]
-        else:
-            rti_list = []
+        # Capture all text in between the start of "import route-target"
+        # and the first exclamation mark to grab all import RTs
+        rti_list = _get_iosxr_rt(r"import\s+route-target(.+?)!", vrf)
         sub_dict.update({"route_import": rti_list})
 
-        rte_regex = re.compile(r"export\s+route-target(.+?)!", re.DOTALL)
-        rte_matches = rte_regex.findall(vrf, re.DOTALL)
-        if rte_matches:
-            rte_list = [s.strip() for s in rte_matches[0].strip().split("\n")]
-        else:
-            rte_list = []
+        # Repeat the same process for export RTs
+        rte_list = _get_iosxr_rt(r"export\s+route-target(.+?)!", vrf)
         sub_dict.update({"route_export": rte_list})
 
         # Append dictionary to return list
         return_dict.update(vrf_dict)
 
     return return_dict
+
+
+def _get_iosxr_rt(regex_str, vrf_str):
+    """
+    Internal-only function to parse IOS XR route targets from
+    a VRF text output. This is a better design pattern than
+    copy/paste, which was done for the IOS parser.
+    """
+    regex = re.compile(regex_str, re.DOTALL)
+    rt_matches = regex.findall(vrf_str, re.DOTALL)
+    if rt_matches:
+        rt_list = [s.strip() for s in rt_matches[0].strip().split("\n")]
+    else:
+        rt_list = []
+
+    # Return the lsit of parsed route-targets
+    return rt_list
