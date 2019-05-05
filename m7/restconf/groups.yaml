@@ -7,12 +7,3 @@ ios:
   platform: ios
   groups:
     - devices
-  data:
-    vrf_cmd: "show running-config | section vrf_def"
-
-iosxr:
-  platform: iosxr
-  groups:
-    - devices
-  data:
-    vrf_cmd: "show running-config vrf"
