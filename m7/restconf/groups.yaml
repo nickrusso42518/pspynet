@@ -7,3 +7,8 @@ ios:
   platform: ios
   groups:
     - devices
+
+iosxr:
+  platform: iosxr
+  groups:
+    - devices

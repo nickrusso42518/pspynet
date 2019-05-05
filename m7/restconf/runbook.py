@@ -80,9 +80,12 @@ def main():
         },
     }
 
-    # Initialize nornir and invoke the grouped task.
+    # Initialize nornir and invoke the grouped task. This task
+    # is limited to IOS-XE devices only, but in the future, you
+    # can remove the filter to include IOS-XR (and other groups), too.
     nornir = InitNornir()
-    result = nornir.run(
+    ios_only = nornir.filter(platform="ios")
+    result = ios_only.run(
         task=manage_rt,
         name="Manage devices via RESTCONF",
         vrf_target=vrf_target,

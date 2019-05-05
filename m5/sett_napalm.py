@@ -69,7 +69,7 @@ def main():
 
         # All done; close the connection
         device.close()
-        print("OK!")
+        print("OK!\n")
 
 
 if __name__ == "__main__":

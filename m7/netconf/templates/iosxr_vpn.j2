@@ -36,7 +36,7 @@
          <route-target>
           <type>as</type>
 {%   for rte in vrf.route_export %}
-{%   set rt_halves = rti.split(":") %}
+{%   set rt_halves = rte.split(":") %}
           <as-or-four-byte-as>
            <as-xx>0</as-xx>
            <as>{{ rt_halves[0] }}</as>

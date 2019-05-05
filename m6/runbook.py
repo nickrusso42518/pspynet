@@ -6,6 +6,7 @@ Purpose: Demonstrate using Nornir to introduce orchestration and
 concurrency, as well as inventory management.
 """
 
+import logging
 from nornir import InitNornir
 from nornir.plugins.tasks.networking import (
     # napalm_cli,
@@ -82,7 +83,7 @@ def main():
     # Use Nornir-supplied function to pretty-print the result
     # to see a recap of all actions taken. Standard Python logging
     # levels are supported to set output verbosity.
-    print_result(result)
+    print_result(result, severity_level=logging.INFO)
 
 
 if __name__ == "__main__":

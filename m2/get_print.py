@@ -32,10 +32,12 @@ def main():
     Execution starts here.
     """
 
-    # Define host inventory in line
+    # Define host inventory in line. Remember our platform types:
+    #   R1 is a Cisco IOS-XE CSR1000v
+    #   R2 is a Cisco IOS-XR XRv9000
     host_dict = {
-        "csr": "show running-config | section vrf_definition",
-        "xrv": "show running-config vrf",
+        "R1": "show running-config | section vrf_definition",
+        "R2": "show running-config vrf",
     }
 
     # For each host in the inventory dict, extract key and value
