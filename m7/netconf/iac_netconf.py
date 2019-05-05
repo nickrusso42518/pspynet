@@ -14,16 +14,16 @@ from lxml.etree import fromstring, tostring
 
 def save_config_ios(conn):
     """
-    Save config on Cisco XE is complex
-    Sending custom RPCs can be tricky, see link below
-    https://github.com/ncclient/ncclient/issues/182
+    Save config on Cisco XE is complex due to lack of candidate config.
+    Need to use custom RPC string formed into XML document to save.
     """
     save_rpc = '<save-config xmlns="http://cisco.com/yang/cisco-ia"/>'
     save_resp = conn.dispatch(fromstring(save_rpc))
+
+    # Print indication of success or failure, including comma-separated errors
     if save_resp.ok:
         print("Config successfully saved")
     else:
-        # Print list of errors as a comma-separated list
         print(f"Errors during save: {','.join(save_resp.errors)}")
 
 
@@ -50,6 +50,9 @@ def main():
         template = j2_env.get_template(f"templates/{host['platform']}_vpn.j2")
         vrf_config = template.render(data=vrfs["vrfs"])
 
+        # Handy troubleshooting code to print out XML intended config
+        # print(vrf_config)
+
         # Open a new NETCONF connection to each host using kwargs technique
         connect_params = {
             "host": host["name"],
@@ -63,7 +66,7 @@ def main():
         # Use the dict above as "keyword arguments" to open netconf session
         with manager.connect(**connect_params) as conn:
 
-            # Gather the current configuration and pretty-print it
+            # Gather the current XML configuration and pretty-print it
             get_vrfs_resp = conn.get_config(
                 source="running", filter=("subtree", host["filter"])
             )

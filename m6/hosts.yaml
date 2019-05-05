@@ -9,6 +9,7 @@ CSR:
         description: "python automation testing"
         rd: "7:100"
         route_import:
+          - "7:2"  # optional comment here
           - "7:6"  # optional comment here
           - "7:8"  # optional comment here
           - "7:10"  # optional comment here
@@ -26,7 +27,6 @@ XRV:
         route_import:
           - "7:2"  # optional comment here
           - "7:6"  # optional comment here
+          - "7:8"  # optional comment here
           - "7:10"  # optional comment here
-          - "7:333"  # optional comment here
-          - "7:555"  # optional comment here
         route_export: []

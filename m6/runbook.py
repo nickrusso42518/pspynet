@@ -8,7 +8,8 @@ concurrency, as well as inventory management.
 
 from nornir import InitNornir
 from nornir.plugins.tasks.networking import (
-    napalm_cli,
+    # napalm_cli,
+    netmiko_send_command,
     napalm_get,
     napalm_configure,
 )
@@ -32,15 +33,21 @@ def manage_rt(task):
     model = task1_result[0].result["get_facts"]["model"]
     print(f"{task.host.hostname}: connected as model type {model}")
 
-    # TASK 2: Collect the VRF running configuration
-    # Note that using "task=netmiko_send_command" is another option
-    task2_result = task.run(task=napalm_cli, commands=[task.host["vrf_cmd"]])
-    output = task2_result[0].result[task.host["vrf_cmd"]]
+    # TASK 2: Collect the VRF running configuration using netmiko
+    task2_result = task.run(
+        task=netmiko_send_command, command_string=task.host["vrf_cmd"]
+    )
+    cmd_output = task2_result[0].result
+
+    # ALTERNATIVE IMPLEMENTATION: Can use napalm_cli just as easily,
+    # but using netmiko and NAPALM together highlights Nornir's flexibility
+    # task2_result = task.run(task=napalm_cli, commands=[task.host["vrf_cmd"]])
+    # cmd_output = task2_result[0].result[task.host["vrf_cmd"]]
 
     # Determine the parser and perform parsing. This is a huge advantange
     # of using Nornir ... you can run arbitrary Python code wherever you want!
     parse_rt = get_rt_parser(task.host.platform)
-    vrf_data = parse_rt(output)
+    vrf_data = parse_rt(cmd_output)
     rt_updates = rt_diff(task.host["vrfs"], vrf_data)
 
     # TASK 3: Create the template of config to add
@@ -52,9 +59,8 @@ def manage_rt(task):
     )
     new_vrf_config = task3_result[0].result
 
-    # TASK 4: Configure the devices using NAPALM
+    # TASK 4: Configure the devices using NAPALM and print any updates
     task4_result = task.run(task=napalm_configure, configuration=new_vrf_config)
-
     if task4_result[0].diff:
         print(f"{task.host.hostname}: diff below\n{task4_result[0].diff}")
     else:
@@ -71,7 +77,6 @@ def main():
     print("Nornir initialized with inventory hosts:")
     for host in nornir.inventory.hosts.keys():
         print(host)
-    # print(nornir.inventory.hosts.keys().join("\n"))
     result = nornir.run(task=manage_rt)
 
     # Use Nornir-supplied function to pretty-print the result
