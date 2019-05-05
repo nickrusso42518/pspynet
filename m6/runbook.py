@@ -30,7 +30,7 @@ def manage_rt(task):
     # TASK 1: Gather facts using NAPALM to get model ID
     task1_result = task.run(task=napalm_get, getters=["get_facts"])
     model = task1_result[0].result["get_facts"]["model"]
-    print(f"{task.host.hostname} model type: {model}")
+    print(f"{task.host.hostname}: connected as model type {model}")
 
     # TASK 2: Collect the VRF running configuration
     # Note that using "task=netmiko_send_command" is another option
@@ -55,10 +55,10 @@ def manage_rt(task):
     # TASK 4: Configure the devices using NAPALM
     task4_result = task.run(task=napalm_configure, configuration=new_vrf_config)
 
-    if task4_result[0].result:
-        print(task4_result[0].result.diff)
+    if task4_result[0].diff:
+        print(f"{task.host.hostname}: diff below\n{task4_result[0].diff}")
     else:
-        print("no diff; config up to date")
+        print(f"{task.host.hostname}: no diff; config up to date")
 
 
 def main():
@@ -68,6 +68,10 @@ def main():
 
     # Initialize nornir and invoke the grouped task.
     nornir = InitNornir()
+    print("Nornir initialized with inventory hosts:")
+    for host in nornir.inventory.hosts.keys():
+        print(host)
+    # print(nornir.inventory.hosts.keys().join("\n"))
     result = nornir.run(task=manage_rt)
 
     # Use Nornir-supplied function to pretty-print the result
