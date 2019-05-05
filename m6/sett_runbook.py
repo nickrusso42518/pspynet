@@ -32,7 +32,7 @@ def manage_rt(task):
     # TASK 1: Gather facts using NAPALM to get model ID
     task1_result = task.run(task=napalm_get, getters=["get_facts"])
     model = task1_result[0].result["get_facts"]["model"]
-    print(f"{task.host.hostname}: connected as model type {model}")
+    print(f"{task.host.name}: connected as model type {model}")
 
     # TASK 2: Collect the VRF running configuration using netmiko
     task2_result = task.run(
@@ -45,8 +45,7 @@ def manage_rt(task):
     # task2_result = task.run(task=napalm_cli, commands=[task.host["vrf_cmd"]])
     # cmd_output = task2_result[0].result[task.host["vrf_cmd"]]
 
-    # Determine the parser and perform parsing. This is a huge advantange
-    # of using Nornir ... you can run arbitrary Python code wherever you want!
+    # Determine the parser and perform parsing.
     parse_rt = get_rt_parser(task.host.platform)
     vrf_data = parse_rt(cmd_output)
     rt_updates = rt_diff(task.host["vrfs"], vrf_data)
@@ -63,9 +62,9 @@ def manage_rt(task):
     # TASK 4: Configure the devices using NAPALM and print any updates
     task4_result = task.run(task=napalm_configure, configuration=new_vrf_config)
     if task4_result[0].diff:
-        print(f"{task.host.hostname}: diff below\n{task4_result[0].diff}")
+        print(f"{task.host.name}: diff below\n{task4_result[0].diff}")
     else:
-        print(f"{task.host.hostname}: no diff; config up to date")
+        print(f"{task.host.name}: no diff; config up to date")
 
 
 def main():
@@ -73,11 +72,16 @@ def main():
     Execution begins here.
     """
 
-    # Initialize nornir and invoke the grouped task.
+    # Initialize nornir, nothing new yet.
     nornir = InitNornir()
+
+    # We can run arbitrary Python code, so let's just print the
+    # hostnames loaded through the inventory, which are dict keys.
     print("Nornir initialized with inventory hosts:")
     for host in nornir.inventory.hosts.keys():
         print(host)
+
+    # Invoke the grouped task.
     result = nornir.run(task=manage_rt)
 
     # Use Nornir-supplied function to pretty-print the result

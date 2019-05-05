@@ -6,14 +6,14 @@ all:	fmt lint test
 .PHONY: fmt
 fmt:
 	@echo "Starting  format"
-	find . -name "*.py" | xargs black -l 80
+	find . -name "*.py" | xargs black --line-length 80
 	@echo "Completed format"
 
 .PHONY: lint
 lint:
 	@echo "Starting  lint"
 	find . -name "*.py" | xargs pylint
-	find . -name "*.yml" | xargs yamllint -s
+	find . -name "*.yml" | xargs yamllint --strict
 	@echo "Completed lint"
 
 .PHONE: test
