@@ -50,8 +50,7 @@ def main(argv):
         )
 
         # Print the resulting details
-        print("OK!")
-        print(f"  Details: {result}")
+        print(f"Details: {result}\n")
 
 
 if __name__ == "__main__":

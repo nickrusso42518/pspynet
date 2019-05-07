@@ -6,8 +6,8 @@ Purpose: Demonstrate using SSH via paramiko to configure network devices.
 """
 
 import time
-from yaml import safe_load
 import paramiko
+from yaml import safe_load
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -69,7 +69,7 @@ def main():
 
         # Start an interactive shell and collect the prompt
         conn = conn_params.invoke_shell()
-        time.sleep(0.5)
+        time.sleep(1.0)
         print(f"Logged into {get_output(conn).strip()} successfully")
 
         # Send the configuration string to the device

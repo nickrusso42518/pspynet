@@ -13,10 +13,10 @@ import paramiko
 def send_cmd(conn, command):
     """
     Given an open connection and a command, issue the command and wait
-    500 ms for the command to be processed.
+    1 second for the command to be processed.
     """
     conn.send(command + "\n")
-    time.sleep(0.5)
+    time.sleep(1.0)
 
 
 def get_output(conn):
@@ -58,7 +58,7 @@ def main():
 
         # Get an interactive shell and wait a bit for the prompt to appear
         conn = conn_params.invoke_shell()
-        time.sleep(0.5)
+        time.sleep(1.0)
         print(f"Logged into {get_output(conn).strip()} successfully")
 
         # Iterate over the list of commands, sending each one in series
