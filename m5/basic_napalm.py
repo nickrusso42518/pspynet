@@ -34,6 +34,7 @@ def main():
         print("Opening device and fathering facts")
         device.open()
         facts = device.get_facts()
+        print(facts)
         print(f"{host['name']} model type: {facts['model']}")
 
         # Read the YAML file into structured data, may raise YAMLError

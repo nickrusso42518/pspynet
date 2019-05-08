@@ -87,7 +87,7 @@ def main():
     # Use Nornir-supplied function to pretty-print the result
     # to see a recap of all actions taken. Standard Python logging
     # levels are supported to set output verbosity.
-    print_result(result, severity_level=logging.INFO)
+    print_result(result, severity_level=logging.WARNING)
 
 
 if __name__ == "__main__":

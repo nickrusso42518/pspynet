@@ -137,13 +137,22 @@ def test_rt_diff():
             "route_import": ["65000:2"],
             "route_export": ["65000:1"],
         },
+        {
+            "name": "VPN4",
+            "description": "new VRF",
+            "rd": "65000:4",
+            "route_import": ["65000:4"],
+            "route_export": ["65000:4", "65000:5"],
+        },
     ]
 
     # Perform set theory intersection of intended vs actual
     rt_updates = parse_rt.rt_diff(int_vrf_list, run_vrf_dict)
 
+    # Ensure there are 4 keys in the dictionary
+    assert len(rt_updates) == 4
+
     # Check the VPN1 results
-    assert len(rt_updates) == 3
     assert rt_updates[0]["name"] == "VPN1"
     assert rt_updates[0]["description"] == "first VRF"
     assert rt_updates[0]["rd"] == "65000:1"
@@ -173,6 +182,18 @@ def test_rt_diff():
     assert rt_updates[2]["add_rti"] == []
     assert len(rt_updates[2]["del_rti"]) == 1
     assert rt_updates[2]["del_rti"][0] == "65000:333"
+
+    # Check the VPN4 results
+    assert rt_updates[3]["name"] == "VPN4"
+    assert rt_updates[3]["description"] == "new VRF"
+    assert rt_updates[3]["rd"] == "65000:4"
+    assert len(rt_updates[3]["add_rte"]) == 2
+    assert rt_updates[3]["add_rte"][0] == "65000:4"
+    assert rt_updates[3]["add_rte"][1] == "65000:5"
+    assert rt_updates[3]["del_rte"] == []
+    assert len(rt_updates[3]["add_rti"]) == 1
+    assert rt_updates[3]["add_rti"][0] == "65000:4"
+    assert rt_updates[3]["del_rti"] == []
 
 
 def _check_vrf_data(vrf_data):

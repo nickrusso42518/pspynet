@@ -87,6 +87,15 @@ def _get_iosxr_rt(regex_str, vrf_str):
     return rt_list
 
 
+def get_rt_parser(platform):
+    """
+    Selects the proper parsing function based on the specific platform.
+    Note it does not call the function, just returns it for calling later.
+    """
+    dispatch_dict = {"ios": parse_rt_ios, "iosxr": parse_rt_iosxr}
+    return dispatch_dict.get(platform.lower())
+
+
 def rt_diff(int_vrf_list, run_vrf_dict):
     """
     Uses set theory to determine the import/export route-targets that
@@ -125,12 +134,3 @@ def rt_diff(int_vrf_list, run_vrf_dict):
         return_list.append(vrf_dict)
 
     return return_list
-
-
-def get_rt_parser(platform):
-    """
-    Selects the proper parsing function based on the specific platform.
-    Note it does not call the function, just returns it for calling later.
-    """
-    dispatch_dict = {"ios": parse_rt_ios, "iosxr": parse_rt_iosxr}
-    return dispatch_dict.get(platform.lower())

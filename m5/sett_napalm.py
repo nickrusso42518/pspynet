@@ -37,8 +37,10 @@ def main():
         print(f"{host['name']} model type: {facts['model']}")
 
         # Determine the parser, run the proper show command, and perform parsing
-        parse_rt = get_rt_parser(host["platform"])
+        # NAPALM has open issue to obviate need for parser:
+        # https://github.com/napalm-automation/napalm/issues/502
         output = device.cli([host["vrf_cmd"]])
+        parse_rt = get_rt_parser(host["platform"])
         vrf_data = parse_rt(output[host["vrf_cmd"]])
 
         # Read the YAML file into structured data, may raise YAMLError
