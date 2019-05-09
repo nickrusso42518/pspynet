@@ -48,10 +48,10 @@ def main():
             loader=FileSystemLoader("."), trim_blocks=True, autoescape=True
         )
         template = j2_env.get_template(f"templates/{host['platform']}_vpn.j2")
-        vrf_config = template.render(data=vrfs["vrfs"])
+        new_vrf_config = template.render(data=vrfs["vrfs"])
 
         # Handy troubleshooting code to print out XML intended config
-        # print(vrf_config)
+        # print(new_vrf_config)
 
         # Open a new NETCONF connection to each host using kwargs technique
         connect_params = {
@@ -70,16 +70,18 @@ def main():
             get_vrfs_resp = conn.get_config(
                 source="running", filter=("subtree", host["filter"])
             )
+            print(f"{host['name']}: VRF configuration")
             print(tostring(get_vrfs_resp.data_ele, pretty_print=True).decode())
 
             # Apply the new config by replacing the VRF section.
             # This will delete unspecified VRFs and subcomponents like RTs, etc
             config_resp = conn.edit_config(
                 target=host["edit_target"],
-                config=vrf_config,
-                default_operation=host["operation"],
+                config=new_vrf_config,
+                default_operation=host.get("operation"),
             )
 
+            print(f"{host['name']}: Checking response")
             if config_resp.ok:
                 # Save actions differ between platforms
                 # IOS-XR updates the candidate config then commits it
