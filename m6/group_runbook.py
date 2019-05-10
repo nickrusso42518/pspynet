@@ -45,12 +45,6 @@ def main():
     nornir = InitNornir()
     result = nornir.run(task=write_facts)
 
-    # DELETE BEFORE THE DEMO, ADD IN FOR THE RESULT EXPLORATION DEMO
-    # Use the new breakpoint() function to suspend executions here.
-    # This is new in Python 3.7. For Python 3.5 or 3.6, use this code:
-    # import pdb; pdb.set_trace()
-    # breakpoint()
-
     # Use Nornir-supplied function to pretty-print the result
     # to see a recap of all actions taken.
     print_result(result)

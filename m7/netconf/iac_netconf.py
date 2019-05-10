@@ -29,7 +29,9 @@ def save_config_ios(conn):
 
 def main():
     """
-    Execution starts here.
+    Execution starts here. Not using Nornir because NETCONF plugin
+    has not been authored yet. Read more here:
+    https://github.com/nornir-automation/nornir/issues/208
     """
 
     # Read the hosts file into structured data, may raise YAMLError
@@ -49,9 +51,6 @@ def main():
         )
         template = j2_env.get_template(f"templates/{host['platform']}_vpn.j2")
         new_vrf_config = template.render(data=vrfs["vrfs"])
-
-        # Handy troubleshooting code to print out XML intended config
-        # print(new_vrf_config)
 
         # Open a new NETCONF connection to each host using kwargs technique
         connect_params = {

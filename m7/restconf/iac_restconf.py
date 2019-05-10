@@ -6,7 +6,6 @@ Purpose: Demonstrate using Nornir with IOS-XE RESTCONF API
 for infrastructure as code. This is a very modern approach.
 """
 
-import logging
 import requests
 from nornir import InitNornir
 from nornir.plugins.tasks.apis import http_method
@@ -95,7 +94,7 @@ def main():
     # Use Nornir-supplied function to pretty-print the result
     # to see a recap of all actions taken. Standard Python logging
     # levels are supported to set output verbosity.
-    print_result(result, severity_level=logging.INFO)
+    print_result(result)
 
 
 if __name__ == "__main__":

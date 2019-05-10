@@ -21,12 +21,11 @@ from parse_rt import get_rt_parser, rt_diff
 
 def manage_rt(task):
     """
-    This is a grouped task that runs once per host. This
-    iteration happens inside nornir automatically. Anytime
-    'task.run()' is invoked, a new result is automatically added to
-    the MultiResult assembled on a per-host basis. If the grouped
-    task returns anything, that object is stored in MultiResult[0]
-    and all subsequent results are stored thereafter.
+    Grouped task does 4 things:
+    1. Gather facts with NAPALM
+    2. Gather VRF configuration with Netmiko
+    3. Locally render VRF config template
+    4. Configure VRF updates with NAPALM
     """
 
     # TASK 1: Gather facts using NAPALM to get model ID
