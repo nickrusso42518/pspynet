@@ -3,13 +3,13 @@
 """
 Author: Nick Russo
 Purpose: Demonstrate NETCONF on IOS-XE and IOS-XR to manage
-route targets in an infrastructure as code environment.
+route targets using edit-config RPC via ncclient.
 """
 
 from jinja2 import Environment, FileSystemLoader
 from yaml import safe_load
 from ncclient import manager
-from lxml.etree import fromstring, tostring
+from lxml.etree import fromstring
 
 
 def save_config_ios(conn):
@@ -20,11 +20,8 @@ def save_config_ios(conn):
     save_rpc = '<save-config xmlns="http://cisco.com/yang/cisco-ia"/>'
     save_resp = conn.dispatch(fromstring(save_rpc))
 
-    # Print indication of success or failure, including comma-separated errors
-    if save_resp.ok:
-        print("Config successfully saved")
-    else:
-        print(f"Errors during save: {','.join(save_resp.errors)}")
+    # Return the RPC response
+    return save_resp
 
 
 def main():
@@ -65,34 +62,31 @@ def main():
         # Use the dict above as "keyword arguments" to open netconf session
         with manager.connect(**connect_params) as conn:
 
-            # Gather the current XML configuration and pretty-print it
-            get_vrfs_resp = conn.get_config(
-                source="running", filter=("subtree", host["filter"])
-            )
-            print(f"{host['name']}: VRF configuration")
-            print(tostring(get_vrfs_resp.data_ele, pretty_print=True).decode())
-
             # Apply the new config by replacing the VRF section.
             # This will delete unspecified VRFs and subcomponents like RTs, etc
+            print(f"{host['name']}: Connection open")
             config_resp = conn.edit_config(
                 target=host["edit_target"],
                 config=new_vrf_config,
                 default_operation=host.get("operation"),
             )
 
-            print(f"{host['name']}: Checking response")
+            print(f"{host['name']}: Checking edit-config response")
             if config_resp.ok:
                 # Save actions differ between platforms
                 # IOS-XR updates the candidate config then commits it
                 # IOS/IOS-XE updates the running config then copies to startup
                 if host["platform"] == "iosxr":
-                    conn.commit()
+                    save_resp = conn.commit()
                 elif host["platform"] == "ios":
-                    save_config_ios(conn)
-                print("VRFs successfully updated")
+                    save_resp = save_config_ios(conn)
+
+                # If save was successful, print message
+                if save_resp.ok:
+                    print(f"{host['name']}: VRFs successfully updated")
             else:
                 # Print list of errors as a comma-separated list
-                print(f"Errors during update: {','.join(config_resp.errors)}")
+                print(f"{host['name']}: Errors: {','.join(config_resp.errors)}")
 
 
 if __name__ == "__main__":

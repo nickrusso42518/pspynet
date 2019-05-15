@@ -14,11 +14,10 @@ from nornir.plugins.functions.text import print_result
 
 def manage_rt(task, vrf_target, headers):
     """
-    This is a grouped task that runs once per host. You can pass
-    any arbitrary keyword arguments into these tasks, which is handy
-    to avoid declaring too many variables inside the grouped task itself.
-    Since the vrf_target string and headers dictionary do not change on
-    a per-host basis, they can be passed in generically.
+    Run 3 tasks in sequence:
+      1. HTTP GET to capture VRF config
+      2. HTTP PUT to update VRF config based on host vars
+      3. HTTP POST to save config
     """
 
     # Host-specific URL based on the current host
