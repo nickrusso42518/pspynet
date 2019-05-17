@@ -74,6 +74,9 @@ def main():
             send_cmd(conn, command)
             print(get_output(conn))
 
+        # Close session when we are done
+        conn.close()
+
 
 if __name__ == "__main__":
     main()

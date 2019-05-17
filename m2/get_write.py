@@ -74,6 +74,9 @@ def main():
             send_cmd(conn, command)
             concat_output += get_output(conn)
 
+        # Close session when we are done
+        conn.close()
+
         # Open a new text file per host and write the output
         print(f"Writing {hostname} facts to file")
         with open(f"{hostname}_facts.txt", "w") as handle:
