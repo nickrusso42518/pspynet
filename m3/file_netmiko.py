@@ -31,7 +31,7 @@ def main(argv):
 
         # Initialize the SSH connection
         print(f"Connecting to {host['name']}")
-        net_connect = Netmiko(
+        conn = Netmiko(
             host=host["name"],
             username="pyuser",
             password="pypass",
@@ -41,16 +41,17 @@ def main(argv):
         # Upload the file specified. The dict.get(key) function tries
         # to retrieve the value at the specified key and returns None
         # if it does not exist. Very useful in network automation!
-        print(f"  Uploading {argv[1]} ... ", end="")
+        print(f"  Uploading {argv[1]}")
         result = file_transfer(
-            net_connect,
+            conn,
             source_file=argv[1],
             dest_file=argv[1],
             file_system=host.get("file_system"),
         )
 
         # Print the resulting details
-        print(f"Details: {result}\n")
+        print(f"  Details: {result}\n")
+        conn.disconnect()
 
 
 if __name__ == "__main__":

@@ -41,25 +41,25 @@ def main():
         new_vrf_config = template.render(data=vrfs)
 
         # Create netmiko SSH connection handler to access the device
-        net_connect = Netmiko(
+        conn = Netmiko(
             host=host["name"],
             username="pyuser",
             password="pypass",
             device_type=platform,
         )
 
-        print(f"Logged into {net_connect.find_prompt()} successfully")
+        print(f"Logged into {conn.find_prompt()} successfully")
 
         # Send the configuration string to the device. Netmiko
         # takes a list of strings, not a giant \n-delimited string,
         # so use the .split() function
-        result = net_connect.send_config_set(new_vrf_config.split("\n"))
+        result = conn.send_config_set(new_vrf_config.split("\n"))
 
         # Netmiko automatically collects the results; you can ignore them
         # or process them further
         print(result)
 
-        net_connect.disconnect()
+        conn.disconnect()
 
 
 if __name__ == "__main__":

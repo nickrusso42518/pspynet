@@ -76,6 +76,7 @@ def main():
         print(new_vrf_config)
         send_cmd(conn, new_vrf_config)
         print(f"Updated {host['name']} VRF configuration")
+        conn.close()
 
 
 if __name__ == "__main__":
