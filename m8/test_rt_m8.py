@@ -7,7 +7,7 @@ for IOS-XE and IOS-XR are functional. Run with "-s" to see outputs.
 File renamed to "test_rt_pd" for "parse" and "diff" together.
 """
 
-import parse_rt
+from parse_rt_m8 import parse_rt_ios, parse_rt_iosxr, rt_diff
 
 
 def test_parse_rt_ios():
@@ -40,7 +40,7 @@ def test_parse_rt_ios():
     print(vrf_output)
 
     # Perform parsing, print structured data, and validate
-    vrf_data = parse_rt.parse_rt_ios(vrf_output)
+    vrf_data = parse_rt_ios(vrf_output)
     print(vrf_data)
     _check_vrf_data(vrf_data)
 
@@ -88,7 +88,7 @@ def test_parse_rt_iosxr():
     print(vrf_output)
 
     # Perform parsing, print structured data, and validate
-    vrf_data = parse_rt.parse_rt_iosxr(vrf_output)
+    vrf_data = parse_rt_iosxr(vrf_output)
     print(vrf_data)
     _check_vrf_data(vrf_data)
 
@@ -138,7 +138,7 @@ def test_rt_diff():
     ]
 
     # Perform set theory intersection of intended vs actual
-    rt_updates = parse_rt.rt_diff(int_vrf_list, run_vrf_dict)
+    rt_updates = rt_diff(int_vrf_list, run_vrf_dict)
 
     # Ensure there are 4 keys in the dictionary
     assert len(rt_updates) == 4

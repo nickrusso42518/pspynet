@@ -9,6 +9,7 @@ fmt:
 	find . -name "*.py" | xargs black --line-length 80
 	@echo "Completed format"
 
+# remove yamllint before video and publication
 .PHONY: lint
 lint:
 	@echo "Starting  lint"

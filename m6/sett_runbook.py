@@ -16,7 +16,7 @@ from nornir.plugins.tasks.networking import (
 )
 from nornir.plugins.tasks.text import template_file
 from nornir.plugins.functions.text import print_result
-from parse_rt import get_rt_parser, rt_diff
+from parse_rt_m6 import get_rt_parser, rt_diff
 
 
 def manage_rt(task):

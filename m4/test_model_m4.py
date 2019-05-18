@@ -6,7 +6,7 @@ Purpose: The pytest functions for ensuring platform model ID parsers
 for IOS-XE and IOS-XR are functional. Run with "-s" to see outputs.
 """
 
-from parse_model import parse_model_ios, parse_model_iosxr
+from parse_model_m4 import parse_model_ios, parse_model_iosxr
 
 
 def test_parse_model_ios():

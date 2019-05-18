@@ -9,7 +9,7 @@ platforms to collect structured data.
 from napalm import get_network_driver
 from jinja2 import Environment, FileSystemLoader
 from yaml import safe_load
-from parse_rt import get_rt_parser, rt_diff
+from parse_rt_m8 import get_rt_parser, rt_diff
 
 
 def main():

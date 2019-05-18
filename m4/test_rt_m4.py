@@ -6,7 +6,7 @@ Purpose: The pytest functions for ensuring VRF configuration parsers
 for IOS-XE and IOS-XR are functional. Run with "-s" to see outputs.
 """
 
-from parse_rt import parse_rt_ios, parse_rt_iosxr
+from parse_rt_m4 import parse_rt_ios, parse_rt_iosxr
 
 
 def test_parse_rt_ios():
