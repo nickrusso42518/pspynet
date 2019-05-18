@@ -26,20 +26,20 @@ def main():
         # Determine and create the network driver object based on platform
         print(f"Getting {host['platform']} driver")
         driver = get_network_driver(host["platform"])
-        device = driver(
+        conn = driver(
             hostname=host["name"], username="pyuser", password="pypass"
         )
 
         # Open the connection and get the model ID
-        print("Opening device and fathering facts")
-        device.open()
-        facts = device.get_facts()
+        print("Opening connection and fathering facts")
+        conn.open()
+        facts = conn.get_facts()
         print(f"{host['name']} model type: {facts['model']}")
 
         # Determine the parser, run the proper show command, and perform parsing
         # NAPALM has open issue to obviate need for parser:
         # https://github.com/napalm-automation/napalm/issues/502
-        output = device.cli([host["vrf_cmd"]])
+        output = conn.cli([host["vrf_cmd"]])
         parse_rt = get_rt_parser(host["platform"])
         vrf_data = parse_rt(output[host["vrf_cmd"]])
 
@@ -60,17 +60,17 @@ def main():
         new_vrf_config = template.render(data=rt_updates)
 
         # Use NAPALM built-in merging to compare and merge RT updates
-        device.load_merge_candidate(config=new_vrf_config)
-        diff = device.compare_config()
+        conn.load_merge_candidate(config=new_vrf_config)
+        diff = conn.compare_config()
         if diff:
             print(diff)
             print("Committing configuration changes")
-            device.commit_config()
+            conn.commit_config()
         else:
             print("no diff; config up to date")
 
         # All done; close the connection
-        device.close()
+        conn.close()
         print("OK!\n")
 
 

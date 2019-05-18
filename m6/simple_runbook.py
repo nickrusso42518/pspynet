@@ -20,6 +20,8 @@ def main():
     nornir = InitNornir()
 
     # Use NAPALM logic to invoke the "get_facts" getter
+    # Below is the documentation page used in the demo:
+    # https://nornir.readthedocs.io/en/stable/plugins/tasks/networking.html
     result = nornir.run(task=napalm_get, getters=["get_facts"])
 
     # Use Nornir-supplied function to pretty-print the result
