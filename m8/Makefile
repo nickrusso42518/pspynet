@@ -20,5 +20,5 @@ lint:
 test:
 	@echo "Starting  unit tests"
 	find . -name "*.pyc" -delete
-	find . -name "test_*.py" | xargs pytest
+	pytest .
 	@echo "Completed unit tests"
