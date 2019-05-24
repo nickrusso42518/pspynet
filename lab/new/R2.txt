@@ -1,7 +1,7 @@
 hostname R2
 username pyuser
  group root-lr
- password 7 14070B1B0D1739
+ password pypass
 !
 vrf POLICE
  address-family ipv4 unicast
@@ -101,7 +101,9 @@ xml agent
 !
 netconf agent tty
 !
+netconf-yang agent
+ ssh
+!
 ssh server v2
 ssh server vrf default
 ssh server netconf vrf default
-end

@@ -1,3 +1,5 @@
+hostname R1
+username pyuser privilege 15 password pypass
 netconf-yang
 restconf
 ip tcp mss 1400
@@ -67,3 +69,6 @@ router bgp 65000
  scope vrf POLICE
   address-family ipv4
    redistribute connected
+line vty 0 4
+ exec-time 0 0
+ login local
