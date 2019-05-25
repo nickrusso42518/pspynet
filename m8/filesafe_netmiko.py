@@ -35,7 +35,7 @@ def main(argv):
 
         # Initialize the SSH connection
         print(f"Connecting to {host['name']}")
-        net_connect = Netmiko(
+        conn = Netmiko(
             host=host["name"],
             username="pyuser",
             password="pypass",
@@ -47,7 +47,7 @@ def main(argv):
         # if it does not exist. Very useful in network automation!
         print(f"  Uploading {argv[1]} ... ", end="")
         result = file_transfer(
-            net_connect,
+            conn,
             source_file=argv[1],
             dest_file=argv[1],
             file_system=host.get("file_system"),

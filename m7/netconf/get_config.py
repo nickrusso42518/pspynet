@@ -19,9 +19,10 @@ def main():
 
     # Iterate over the list of hosts (string) defined below.
     # Refreshing the simple "in-line" inventory concept.
+    xr_xmlns = "http://cisco.com/ns/yang/Cisco-IOS-XR-infra-rsi-cfg"
     host_dict = {
         "R1": "<native><vrf></vrf></native>",
-        "R2": '<vrfs xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-infra-rsi-cfg"></vrfs>',
+        "R2": f'<vrfs xmlns="{xr_xmlns}"></vrfs>',
     }
 
     for hostname, vrf_filter in host_dict.items():
