@@ -209,7 +209,7 @@ def _check_vrf_data(vrf_data):
     assert vrf_data["VPN2"]["route_import"][0] == "65000:101"
     assert vrf_data["VPN2"]["route_import"][1] == "65000:202"
 
-    # Ensure VRF VPN2 parsing succeeded
+    # Ensure VRF 123 parsing succeeded
     assert vrf_data["123"]["route_export"] == []
     assert len(vrf_data["123"]["route_import"]) == 1
     assert vrf_data["123"]["route_import"][0] == "65000:303"
