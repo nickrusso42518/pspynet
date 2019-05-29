@@ -149,7 +149,7 @@ def test_rt_diff():
     # Perform set theory intersection of intended vs actual
     rt_updates = rt_diff(int_vrf_list, run_vrf_dict)
 
-    # Ensure there are 4 keys in the dictionary
+    # Ensure there are 4 items in the list
     assert len(rt_updates) == 4
 
     # Check the VPN1 results
