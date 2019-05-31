@@ -1,5 +1,5 @@
-# NETCONF on IOS-XE
-This repository provides an example of using NETCONF via
+# RESTCONF on IOS-XE
+This repository provides an example of using RESTCONF via
 Nornir (Python `requests` behind the scenes) to update
 VRF configurations on IOS-XE. IOS-XR supports RESTCONF but requires
 a special package and, in my experience, is not commonly used
