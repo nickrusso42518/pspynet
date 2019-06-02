@@ -83,7 +83,7 @@ def _get_iosxr_rt(regex_str, vrf_str):
     else:
         rt_list = []
 
-    # Return the lsit of parsed route-targets
+    # Return the list of parsed route-targets
     return rt_list
 
 
