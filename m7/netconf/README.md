@@ -5,7 +5,7 @@ Python's `ncclient` to update VRF configurations.
 The `hosts.yml` file identifies the platform and host-specific parameters,
 which differ widely between the two operating systems. The YAML files in
 `vars/` contains the VRF definitions on each individual host. This usage
-of YAML files is a quick-and-dirty remark of Ansible/Nornir inventory
+of YAML files is a quick-and-dirty remake of Ansible/Nornir inventory
 management for the purpose of keeping the Python code simpler.
 
 The Python code performs two main actions:
