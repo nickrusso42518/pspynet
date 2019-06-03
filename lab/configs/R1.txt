@@ -1,7 +1,10 @@
+hostname R1
+username pyuser privilege 15 password pypass
 netconf-yang
 restconf
 ip tcp mss 1400
 ip ssh logging events
+ip scp server enable
 mpls ldp router-id Loopback0
 vrf definition POLICE
  rd 65000:1
@@ -45,7 +48,7 @@ interface Tunnel13
  ip ospf 1 area 0
  mpls ip
  tunnel source GigabitEthernet1
- tunnel destination 10.125.0.63
+ tunnel destination 10.125.0.83
 router ospf 1
  router-id 192.168.0.1
 router bgp 65000
@@ -66,3 +69,6 @@ router bgp 65000
  scope vrf POLICE
   address-family ipv4
    redistribute connected
+line vty 0 4
+ exec-time 0 0
+ login local

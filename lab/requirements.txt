@@ -1,5 +1,11 @@
-ansible==2.7.7
-ansible-lint
+cryptography==2.4.2
+paramiko
+netmiko
+napalm
+nornir
+requests
 pylint
+black
+pytest
 ncclient
 lxml

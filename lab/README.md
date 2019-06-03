@@ -1,69 +1,115 @@
-# Lab builder
-Simple Ansible project to rapidly build the Globomantics network. The
-entire process should take 5 to 10 minutes.
+# Course background information
+This file contains background information about the course, including
+configuration files and versions.
 
-## Abstract
-This auxiliary project is used to quickly configure the basic MPLS network
-using the absolute minimally complex code. You may use this to help with
-initial setup once your three routers have management IP addresses and
-functional SSH access.
+Please contact me on Twitter `@nickrusso42518` or in the course
+discussion with any questions you have.
 
-This playbook is *not* an example of well-designed infrastructure as code
-because it is designed for lab setup only. Also note that the reason
-my `configs/` are using GRE tunnels is because I recorded this course
-using AWS routers. AWS does not allow IP multicast (OSPF/LDP hellos) or
-non-IP traffic (MPLS-encapsulated packets) to traverse its network fabric.
+## Development machine
+I used an Amazon Linux platform on EC2 for this course, but any Linux
+device will do. I'd also suggest setting up a Python virtual
+environment (`venv`) to ensure there are no collisions with Python
+packages between this course and the system Python instance.
 
-Be sure you have Python 3.6 or newer along with pip installed.
+The following packages are not required but may be useful to you. You
+may install them using your OS package manager, such as `yum` or `apt`.
+Some of these may come as default options in your distribution are they
+are all common.
 
-## Pre-installation
-Follow these steps to ensure your environment is properly configured
-before building the lab. I'm using `Cisco IOS-XE 16.09.02` for this course.
-There are many ways to set up the environment so I try to be descriptive
-rather than prescriptive.
+```
+vim-enhanced
+tree
+make
+git
+```
 
-  1. Create (3) routers set up with management IP addresses.
-     I suggest naming them `R1`, `R2`, and `R3` to match the course names.
-     I used IP addresses `10.125.0.61`, `10.125.0.62`, and `10.125.0.63` for
-     the three routers in sequence. If you change this, be sure to manually
-     update the `configs/` files.
-  2. Ensure you have DNS or `/etc/hosts` entries for these
-     hostnames, allowing Ansible to connect. Alternatively, you could
-     define the host variable `ansible_host: x.x.x.x` to assign an
-     IP address, but I don't recommend this approach.
-  3. Bootstrap the router with this snippet (copy/paste). You *only* need
-     to do this step if SSH has not been configured and a username does
-     not exist. If you can already access the routers, skip this step.
-     On a new router, you'll likely have to use the console or telnet.
-     ```
-     configure terminal
-     username ansible privilege 15 password ansible
-     ip ssh version 2
-     crypto key generate rsa modulus 2048
-     line vty 0 4
-      login local
-      transport input ssh
-     end
-     write memory
-     ```
-  4. SSH into each router and store the SSH public keys in the
-     `~/.ssh/known_hosts` file. You could use `ssh-keyscan` but
-     I recommend logging to ensure your prompt is `#` as
-     opposed to `>`. Once you can log into all routers as
-     `ansible`, you may continue.
+## Network details
+I used Cisco CSR1000v and Cisco XRv9000 in this network, as explained in
+the Globomantics background. Software versions are shown below.
 
-## Installation
-Follow these steps to quickly build the lab environment for this course.
-Note that some modules and excursion may deviate from this precise
-setup. The course expects you to have basic networking and
-Ansible skills to make adjustments as you see fit.
+```
+CSR1000v - Cisco IOS XE Software, Version 16.09.02
+XRv9000 - Cisco IOS XR Software, Version 6.3.1
+```
 
-  1. The `requirements.txt` file contains the Python packages used
-     in this course. Use `make setup` to quickly install them.
-  2. Perform a quick syntax check and execute the lab builder by
-     typing `make`. This also checks IP connectivity by sending ICMP
-     echo-requests across the MPLS network to guarantee the correct
-     VPN topologies were built.
-  3. Optionally log into the routers to poke around. You can also
-     run `make` again just to send pings without making router
-     updates once the lab is built.
+Configurations for R1, R2, and R3 are included in the `configs/` directory.
+You may load these up ahead of time, and given the usage of GRE tunnels to
+interconnect one another, they should work in most public cloud environments.
+
+## Python details
+I used Python 3.7.3 for this course. Python 3.6 is the absolute minimum,
+and in that case, you won't be able to use `breakpoint()` to invoke `pdb`.
+This is explained in the course video content. You can install the newest
+Python version here: `https://www.python.org/downloads/`
+
+```
+$ python --version
+Python 3.7.3
+```
+
+Below is the full list of Python packages in my `venv` with their versions.
+I've also included a `requirements.txt` which you can use to get started
+quickly using `pip install -r requirements.txt`
+
+```
+$ pip list
+Package           Version 
+----------------- --------
+appdirs           1.4.3   
+asn1crypto        0.24.0  
+astroid           2.2.5   
+atomicwrites      1.3.0   
+attrs             19.1.0  
+bcrypt            3.1.6   
+black             19.3b0  
+certifi           2019.3.9
+cffi              1.12.3  
+chardet           3.0.4   
+Click             7.0     
+colorama          0.4.1   
+cryptography      2.4.2   
+future            0.17.1  
+idna              2.8     
+isort             4.3.20  
+Jinja2            2.10.1  
+junos-eznc        2.2.1   
+lazy-object-proxy 1.4.1   
+lxml              4.3.3   
+MarkupSafe        1.1.1   
+mccabe            0.6.1   
+more-itertools    7.0.0   
+mypy-extensions   0.4.1   
+napalm            2.4.0   
+ncclient          0.6.4   
+netaddr           0.7.19  
+netmiko           2.3.3   
+nornir            2.2.0   
+nxapi-plumbing    0.5.2   
+paramiko          2.4.2   
+pathspec          0.5.9   
+pip               19.1.1  
+pluggy            0.11.0  
+py                1.8.0   
+pyasn1            0.4.5   
+pycparser         2.19    
+pydantic          0.18.2  
+pyeapi            0.8.2   
+pyIOSXR           0.53    
+pylint            2.3.0   
+PyNaCl            1.3.0   
+pyserial          3.4     
+pytest            4.5.0   
+PyYAML            5.1     
+requests          2.22.0  
+ruamel.yaml       0.15.96 
+scp               0.13.2  
+setuptools        40.8.0  
+six               1.12.0  
+textfsm           0.4.1   
+toml              0.10.0  
+typed-ast         1.3.5   
+urllib3           1.25.2  
+wcwidth           0.1.7   
+wrapt             1.11.1  
+yamllint          1.15.0  
+```
