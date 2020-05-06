@@ -3,8 +3,8 @@
 """
 Author: Nick Russo
 Purpose: Collection of Nornir-oriented tasks that wrap existing
-ncclient methods. This mimics the look and feel of Netmiko/NAPALM
-methods for consistency.
+ncclient methods. These mimic the look and feel of Netmiko/NAPALM
+tasks (in the main Nornir repository) for consistency.
 """
 
 
