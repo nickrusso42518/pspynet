@@ -48,6 +48,7 @@ def main():
 
     # Initialize Nornir and run the save_config_as_json custom task
     nornir = InitNornir()
+    breakpoint()
     nornir.run(task=save_config_as_json, output_dir=output_dir)
 
 

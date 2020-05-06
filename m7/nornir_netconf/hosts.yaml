@@ -1,15 +1,15 @@
 ---
-xe_latest:
+R1:
   hostname: "ios-xe-mgmt-latest.cisco.com"
   groups:
     - ios
 
-xe_stable:
-  hostname: "ios-xe-mgmt.cisco.com"
-  groups:
-    - ios
-
-xr_536:
-  hostname: "sbx-iosxr-mgmt.cisco.com"
-  groups:
-    - iosxr
+# xe_stable:
+  # hostname: "ios-xe-mgmt.cisco.com"
+  # groups:
+    # - ios
+# 
+# xr_536:
+  # hostname: "sbx-iosxr-mgmt.cisco.com"
+  # groups:
+    # - iosxr

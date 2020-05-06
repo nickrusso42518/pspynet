@@ -16,6 +16,7 @@ ios:
   groups:
     - devices
   data:
+    edit_target: running
     vrf_filter: "<native><vrf></vrf></native>"
 
   # DELETE THESE
@@ -28,6 +29,8 @@ iosxr:
   groups:
     - devices
   data:
+    edit_target: candidate
+    operation: replace
     vrf_filter: >-
       <vrfs xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-infra-rsi-cfg"></vrfs>
 
