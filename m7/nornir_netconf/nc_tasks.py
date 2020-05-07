@@ -12,17 +12,6 @@ from nornir.core.task import Result
 from lxml.etree import fromstring
 
 
-def netconf_custom_rpc(task, rpc_text, **kwargs):
-    """
-    Nornir task to issue a custom NETCONF RPC given an XML-formatted string
-    and additional keyword arguments.
-    """
-
-    conn = task.host.get_connection("netconf", task.nornir.config)
-    result = conn.dispatch(fromstring(rpc_text.strip()), **kwargs)
-    return Result(host=task.host, result=result)
-
-
 def netconf_get(task, **kwargs):
     """
     Nornir task to issue a NETCONF get RPC with optional keyword arguments.
@@ -64,4 +53,15 @@ def netconf_commit(task, **kwargs):
 
     conn = task.host.get_connection("netconf", task.nornir.config)
     result = conn.commit(**kwargs)
+    return Result(host=task.host, result=result)
+
+
+def netconf_custom_rpc(task, rpc_text, **kwargs):
+    """
+    Nornir task to issue a custom NETCONF RPC given an XML-formatted string
+    and additional keyword arguments.
+    """
+
+    conn = task.host.get_connection("netconf", task.nornir.config)
+    result = conn.dispatch(fromstring(rpc_text.strip()), **kwargs)
     return Result(host=task.host, result=result)
