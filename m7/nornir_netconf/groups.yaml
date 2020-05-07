@@ -19,11 +19,6 @@ ios:
     edit_target: running
     vrf_filter: "<native><vrf></vrf></native>"
 
-  # DELETE THESE
-  port: 10000
-  username: developer
-  password: C1sco12345
-
 iosxr:
   platform: iosxr
   groups:
@@ -33,8 +28,3 @@ iosxr:
     operation: replace
     vrf_filter: >-
       <vrfs xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-infra-rsi-cfg"></vrfs>
-
-  # DELETE THESE
-  port: 10000
-  username: admin
-  password: C1sco12345

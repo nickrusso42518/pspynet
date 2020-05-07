@@ -12,16 +12,6 @@ from nornir.core.task import Result
 from lxml.etree import fromstring
 
 
-def netconf_get(task, **kwargs):
-    """
-    Nornir task to issue a NETCONF get RPC with optional keyword arguments.
-    """
-
-    conn = task.host.get_connection("netconf", task.nornir.config)
-    result = conn.get(**kwargs)
-    return Result(host=task.host, result=result)
-
-
 def netconf_get_config(task, source="running", **kwargs):
     """
     Nornir task to issue a NETCONF get_config RPC with optional keyword
