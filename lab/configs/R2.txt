@@ -1,6 +1,7 @@
 hostname R2
 username pyuser
  group root-lr
+ group cisco-support
  password pypass
 !
 vrf POLICE
